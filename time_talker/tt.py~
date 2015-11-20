@@ -1,0 +1,76 @@
+#! /usr/bin/env python
+import subprocess
+import sys
+import datetime
+from jinja2 import Environment, PackageLoader
+jinja_env = Environment(loader=PackageLoader('time_taker','template'))
+
+def speak(text, speed=180, amplitude=10):
+    speed = str(speed)
+    amplitude = str(amplitude)
+    cmd = ['espeak', '-v', 'mb-en1','-s', speed,'-m', '-a', amplitude]
+    p = subprocess.Popen(cmd, stdin=subprocess.PIPE)
+    p.communicate(input=text)
+
+def check_arg():
+    switch = 0
+    try:
+        option = sys.argv[1]
+        if option == '-f':
+            switch = 1
+    except IndexError:
+        pass
+    return switch
+
+
+def split_num(n):
+    n = str(n)
+    result = ','.join(n)
+    return result
+
+class myDateTime():
+    def __init__(self):
+        """
+        """
+        self.now = datetime.datetime.now()
+
+    def getT(self,p):
+        """
+        """
+        result = {}
+        time_part = self.now.strftime(p)
+        result['whole'] = time_part
+        result['split'] = split_num(time_part)
+        result['suffix'] = self.ordinal(time_part)
+        return result
+
+    def ordinal(self,n):
+        try:
+            n = int(n)
+        except ValueError:
+            return None
+        if 10 <= n % 100 < 20:
+            return 'th'
+        else:
+            return  {1 : 'st',
+                     2 : 'nd',
+                     3 : 'rd'}.get(n % 10, "th")
+
+template = jinja_env.get_template('time.ssml')
+d = myDateTime()
+emph = {'rate':0.2,
+        'pitch':'100'}
+num = {'volume':"+50%",
+       'rate':'-20%'}
+
+line = {'hour':d.getT('%H'),
+        'minute':d.getT('%M'),
+        'month':d.getT('%B'),
+        'day':d.getT('%d'),
+        'switch':check_arg(),
+        'emph':emph,
+        'num':num}
+
+message = template.render(line)
+print(message)
+speak(message.replace("\n",""),180,10)

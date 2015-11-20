@@ -1,0 +1,17 @@
+<prosody volume="{{ num.volume }}" rate="{{ num.rate }}">
+<prosody pitch="200"> {{ hour.whole}}</prosody>, {{minute.whole}}.
+</prosody>
+<prosody volume="{{ num.volume }}" rate="{{ num.rate_2 }}">
+{% if switch == 1 %}
+{% else %}
+<prosody pitch="200">{{ hour.split}}</prosody>--{{ minute.split }}.
+{% endif %}
+</prosody>
+<break time="1000ms" />
+{% if switch ==  1 %}
+<prosody volume="{{ num.volume }}" rate="{{ num.rate }}">
+  {{ month.whole }} the {{ day.whole }}{{ day.suffix }}.
+  {{month_abr.whole}} {{ day.split }}
+</prosody>
+
+{% endif %}
