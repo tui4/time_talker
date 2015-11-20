@@ -1,6 +1,8 @@
 # Time Talker
 A simple program that will read the time out loud.
 
+Developed on a Debian system in January 2014. 
+
 - Requires espeak, mbrola 
 - Python and Jinja2
 
